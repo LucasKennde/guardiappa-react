@@ -1,0 +1,18 @@
+
+
+.container{
+    justify-content: center;
+}
+
+#formLogin {
+    display: flex;
+    flex-direction: column;
+
+    
+}
+#formLogin label{
+    display: flex;
+    flex-direction: column;
+
+    background-color: #fff;
+}
