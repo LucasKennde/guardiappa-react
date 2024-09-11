@@ -41,7 +41,7 @@ function Login() {
     };
 
     checkUser();
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-orange-50">
