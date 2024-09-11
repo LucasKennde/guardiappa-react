@@ -26,6 +26,7 @@ function Login() {
     }
     catch (error) {
       console.log(error);
+      alert("Email ou senha incorretos")
     }
   }
 
