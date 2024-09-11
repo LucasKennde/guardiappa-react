@@ -42,26 +42,26 @@ import { Link } from 'react-router-dom'
       <>
         <Header/>
         <main className="w-full flex items-center flex-col">
-            <div className="container-full init w-full " id="home">
-                <div className="flex content-main max-w-screen-2xl">
-                    <div className="content-left">
+        <div class="containerAurora-full init" id="home">
+                <div class="containerAurora max-sm:flex-col content-main">
+                    <div class="content-left">
                         <p><strong>Sinta-se
                                 protegida</strong></p>
                         <p>com a Aurora,
                             nossa Guardiã PPA</p>
-                        <img src={abraco} alt="Abraço" />
+                        <img src={abraco} alt="Abraço" srcset />
                     </div>
-                    <div className="content-right">
-                        <img src={aurora} alt="aurora" />
+                    <div class="content-right">
+                        <img src={aurora} alt="aurora" srcset />
                     </div>
 
                 </div>
             </div>
-            <div className="container-full about" id="about">
-                <div className="container content-about pb-64">
+            <div className="containerAurora-full about" id="about">
+                <div className="containerAurora content-about pb-64">
 
                     <h1>Sobre</h1>
-                    <div className="container-full text-about">
+                    <div className="containerAurora-full text-about">
                         <div className="content-left">
                             <strong>Tecnologia no combate à violência contra as
                                 mulheres</strong>
@@ -78,12 +78,12 @@ import { Link } from 'react-router-dom'
 
             </div>
             
-            <div className="container-full help" id="protetion">
+            <div className="containerAurora-full help" id="protetion">
 
                 <div className="w-full  max-w-screen-2xl content-help pb-48">
 
                     <h1>A Aurora está te escutando!</h1>
-                    <div className="container-full text-help">
+                    <div className="containerAurora-full text-help">
                         <div className="content-left">
                             <p> Mensagem:</p>
                             <textarea type="text" name="textHelp"
@@ -121,11 +121,11 @@ import { Link } from 'react-router-dom'
                 </div>
 
             </div>
-            <div className="container-full p-10 feedback">
+            <div className="containerAurora-full p-10 feedback">
 
-                <div className="container content-feedback">
+                <div className="containerAurora content-feedback">
 
-                    <div className="container-full max-w-md text-feedback">
+                    <div className="containerAurora-full max-w-md text-feedback">
                         <h1>★★★★★</h1>
                         <p className='p-5'>"Eu nunca soube onde buscar ajuda até encontrar este site. As informações e recursos fornecidos aqui foram essenciais para minha recuperação."</p>
                         <span>

@@ -20,7 +20,6 @@ function Login() {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       setUser(data.user);
-      console.log(data);
       navigate("/dashboard");
 
     }

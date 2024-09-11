@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
   const { user } = useAuth();
-  console.log(user)
   const [fullName, setFullName] = useState("");
   const firstName = fullName.split(" ")
   const navigate = useNavigate()
