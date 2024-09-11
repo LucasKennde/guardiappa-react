@@ -13,17 +13,17 @@ function Cadastro() {
     
     useEffect(() => {
         const checkUser = async () => {
-          // Verifica se o usuário já está autenticado
-          const { data: { user: currentUser }, error } = await supabase.auth.getUser();
-          if (error) {
-            console.error("Erro ao verificar o usuário:", error);
-          } else if (currentUser) {
-            navigate('/dashboard'); // Redireciona para o dashboard se o usuário estiver autenticado
-          }
+            // Verifica se o usuário já está autenticado
+            const { data: { user: currentUser }, error } = await supabase.auth.getUser();
+            if (error) {
+                console.error("Erro ao verificar o usuário:", error);
+            } else if (currentUser) {
+                navigate('/dashboard'); // Redireciona para o dashboard se o usuário estiver autenticado
+            }
         };
-    
+
         checkUser();
-      }, []);
+    }, [navigate]);
 
     const handleCadastroSubmit = async (e) => {
         e.preventDefault();

@@ -60,7 +60,7 @@ export default function Dashboard() {
       fetchUserProfile();
     } else {
     }
-  }, []);
+  }, [user, navigate]);
 
 
 const getDenuncias = async ()=>{
