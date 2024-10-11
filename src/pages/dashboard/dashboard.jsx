@@ -15,6 +15,8 @@ export default function Dashboard() {
   const firstName = fullName.split(" ")
   const navigate = useNavigate()
   const [denuncias, setDenuncias] = useState([])
+  const [gestores, setGestores] = useState([])
+
 
 
   const handleLogout = async () => {
@@ -22,10 +24,10 @@ export default function Dashboard() {
       const { error } = await supabase.auth.signOut();
 
       if (error) {
-        throw error; // Lança um erro se houver
+        throw error;
       }
 
-      navigate("/"); // Redireciona após logout
+      navigate("/");
       console.log("Usuário desconectado com sucesso");
     } catch (error) {
       console.error("Erro ao desconectar o usuário:", error.message);
@@ -33,57 +35,85 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       if (user) {
-        try{
-          const { data, error } = await supabase
-          .from('usuariosCadastrados')
-          .select('*')
-          .eq('email', user.email)
-          .single();
-          getDenuncias()
-        if (error) {
-          console.error("Erro ao buscar o nome do perfil:", error);
-        } else {
-          setFullName(data.name);
+        try {
+          const [{ data: userProfile, error: profileError }, denunciasResponse, gestoresResponse] = await Promise.all([
+            supabase.from('usuariosCadastrados').select('*').eq('email', user.email).single(),
+            supabase.from('complaints').select('*'),
+            supabase.from('usuariosCadastrados').select('*')
+          ]);
+
+          if (profileError || denunciasResponse.error || gestoresResponse.error) {
+            throw new Error("Erro ao buscar dados");
+          }
+
+          setFullName(userProfile.name);
+          setDenuncias(denunciasResponse.data);
+          setGestores(gestoresResponse.data);
+          console.log(userProfile.is_verified);
+
+          if (!userProfile.is_verified) {
+            alert("Você não é um usuário verificado. Por favor, entre em contato com o suporte.");
+            handleLogout();
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+          navigate('/login');
         }
-      }catch (error){
-        console.error("Erro ao buscar o nome do perfil:", error);
-        navigate('/login'); // Redireciona se o usuário não estiver autenticado
       }
-        }
-        
     };
-    
+
     if (user !== undefined) {
-      // Somente tenta buscar perfil se user não for indefinido
-      fetchUserProfile();
-    } else {
+      fetchData();
     }
   }, [user, navigate]);
 
 
-const getDenuncias = async ()=>{
-  const { data, error } = await supabase
-  .from('complaints')
-  .select('*')
-  if (error) {
-    console.error("Erro ao buscar denúncias:", error);
+  const getDenuncias = async () => {
+    const { data, error } = await supabase
+      .from('complaints')
+      .select('*')
+    if (error) {
+      console.error("Erro ao buscar denúncias:", error);
     } else {
       setDenuncias(data);
     }
-      
-}
+
+  }
+  const getGestores = async () => {
+    const { data, error } = await supabase
+      .from('usuariosCadastrados')
+      .select('*')
+    if (error) {
+      console.error("Erro ao buscar gestores:", error);
+    } else {
+      setGestores(data);
+    }
+  }
+
+  const toggleVerifiedStatus = async (gestorId, currentStatus) => {
+    const { error } = await supabase
+      .from('usuariosCadastrados')
+      .update({ is_verified: !currentStatus })
+      .eq('user_id', gestorId);
+
+    if (error) {
+      console.error('Erro ao atualizar o status:', error);
+    } else {
+      getGestores();
+    }
+  };
+
+  const calcularMargem = (denunciasAtual, denunciasAnterior) => {
+    if (denunciasAnterior === 0) return 0;
+    const diferenca = denunciasAtual - denunciasAnterior;
+    const margem = (diferenca / denunciasAnterior) * 100;
+    return margem.toFixed(2);
+  };
 
 
 
-  
-
-  const [gestores, setGestores] = useState([
-    { id: 1, nome: 'Maria Silva', email: 'maria@example.com', cargo: 'Coordenadora' },
-    { id: 2, nome: 'João Santos', email: 'joao@example.com', cargo: 'Analista' },
-    { id: 3, nome: 'Ana Oliveira', email: 'ana@example.com', cargo: 'Supervisora' },
-  ])
 
   return (
     <div className="flex flex-col min-h-screen  bg-orange-50">
@@ -102,7 +132,7 @@ const getDenuncias = async ()=>{
               <AlertTriangle className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">127</div>
+              <div className="text-2xl font-bold">{denuncias.length}</div>
             </CardContent>
           </Card>
           <Card>
@@ -120,7 +150,7 @@ const getDenuncias = async ()=>{
               <Users className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">5</div>
+              <div className="text-2xl font-bold">{gestores.length}</div>
             </CardContent>
           </Card>
         </div>
@@ -151,17 +181,18 @@ const getDenuncias = async ()=>{
                   <TableBody>
                     {denuncias.map((denuncia) => {
                       const data = denuncia.created_at.split("T")
-                      if(denuncia.text.trim() !==""){
-                        return(
-                      
+                      if (denuncia.text.trim() !== "") {
+                        return (
+
                           <TableRow key={denuncia.id}>
                             <TableCell>{denuncia.id}</TableCell>
                             <TableCell>{denuncia.tipo_ajuda}</TableCell>
                             <TableCell>{denuncia.text}</TableCell>
                             <TableCell>{data[0]}</TableCell>
                           </TableRow>
-                      )}
-                      
+                        )
+                      }
+
                     })}
                   </TableBody>
                 </Table>
@@ -183,15 +214,26 @@ const getDenuncias = async ()=>{
                     <TableRow>
                       <TableHead>Nome</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Cargo</TableHead>
+                      <TableHead>Cpf</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {gestores.map((gestor) => (
-                      <TableRow key={gestor.id}>
-                        <TableCell>{gestor.nome}</TableCell>
+                      <TableRow key={gestor.user_id}>
+                        <TableCell>{gestor.name}</TableCell>
                         <TableCell>{gestor.email}</TableCell>
-                        <TableCell>{gestor.cargo}</TableCell>
+                        <TableCell>{gestor.cpf}</TableCell>
+                        <TableCell>{gestor.is_verified ? "Ativo" : "Não Verificado"}</TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => toggleVerifiedStatus(gestor.user_id, gestor.is_verified)}
+                            className={gestor.is_verified ? "bg-red-500 text-white" : "bg-green-500 text-white"}
+                          >
+                            {gestor.is_verified ? "Desativar" : "Ativar"}
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
