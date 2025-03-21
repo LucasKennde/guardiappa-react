@@ -21,12 +21,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        throw error;
-      }
-
+      await supabase.auth.signOut();
       navigate("/");
       console.log("Usuário desconectado com sucesso");
     } catch (error) {
@@ -38,32 +33,19 @@ export default function Dashboard() {
     const fetchData = async () => {
       if (user) {
         try {
-          const [{ data: userProfile, error: profileError }, denunciasResponse, gestoresResponse] = await Promise.all([
-            supabase.from('usuariosCadastrados').select('*').eq('email', user.email).single(),
-            supabase.from('complaints').select('*'),
-            supabase.from('usuariosCadastrados').select('*')
-          ]);
-
-          if (profileError || denunciasResponse.error || gestoresResponse.error) {
-            throw new Error("Erro ao buscar dados");
-          }
-
+          const {data:userProfile} = await supabase.from('users').select('*').eq('email', user.email).single()
           setFullName(userProfile.name);
-          setDenuncias(denunciasResponse.data);
-          setGestores(gestoresResponse.data);
-          console.log(userProfile.is_verified);
-
-          if (!userProfile.is_verified) {
+          if (!userProfile.isAdmin) {
             alert("Você não é um usuário verificado. Por favor, entre em contato com o suporte.");
             handleLogout();
           }
         } catch (error) {
           console.error("Erro ao buscar dados:", error);
-          navigate('/login');
+          handleLogout();
         }
       }
     };
-
+    getGestores()
     if (user !== undefined) {
       fetchData();
     }
@@ -81,10 +63,14 @@ export default function Dashboard() {
     }
 
   }
+
   const getGestores = async () => {
     const { data, error } = await supabase
-      .from('usuariosCadastrados')
+      .from('users')
       .select('*')
+      .eq('isAdmin', true)
+      console.log(data);
+      
     if (error) {
       console.error("Erro ao buscar gestores:", error);
     } else {

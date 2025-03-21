@@ -13,12 +13,11 @@ function Cadastro() {
     
     useEffect(() => {
         const checkUser = async () => {
-            // Verifica se o usuário já está autenticado
             const { data: { user: currentUser }, error } = await supabase.auth.getUser();
             if (error) {
                 console.error("Erro ao verificar o usuário:", error);
             } else if (currentUser) {
-                navigate('/dashboard'); // Redireciona para o dashboard se o usuário estiver autenticado
+                navigate('/dashboard'); 
             }
         };
 
@@ -34,14 +33,13 @@ function Cadastro() {
                         email: email,
                         password: password
                     })
-                    
+                   
                     if (error) {
                         alert(error.message)
                     } else {
                         await cadastrarUsuario()
                         alert('Cadastro realizado com sucesso')
                         navigate('/login')
-                        console.log(data)
                     }
                 } catch (error) {
                     alert(error.message)
@@ -52,28 +50,18 @@ function Cadastro() {
         } else {
             alert('Preencha todos os campos')
         }
-
-
         
     }
 
     async function cadastrarUsuario() {
-        // Obtenha os dados do usuário autenticado usando a nova API
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
-        if (authError) {
-            console.error("Erro ao obter o usuário autenticado:", authError);
-            return;
-        }
-    
-        // Insira os dados na tabela 'usuariosCadastrados'
+     
         const { data, error } = await supabase
-            .from("usuariosCadastrados")
+            .from("users")
             .insert({
                 name: name,
                 email: email,
-                data_nascimento: data_nascimento,
-                status: 'user',
+                birthdate: data_nascimento,
+                isAdmin:false,
                 deleted: false,
                 cpf: cpf
             });

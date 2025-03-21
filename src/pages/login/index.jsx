@@ -15,7 +15,6 @@ function Login() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -31,12 +30,11 @@ function Login() {
 
   useEffect(() => {
     const checkUser = async () => {
-      // Verifica se o usuário já está autenticado
       const { data: { user: currentUser }, error } = await supabase.auth.getUser();
       if (error) {
         console.error("Erro ao verificar o usuário:", error);
       } else if (currentUser) {
-        navigate('/dashboard'); // Redireciona para o dashboard se o usuário estiver autenticado
+        navigate('/dashboard'); 
       }
     };
 

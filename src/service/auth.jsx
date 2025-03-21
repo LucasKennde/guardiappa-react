@@ -19,16 +19,14 @@ export function AuthContextProvider({ children }) {
 
         getUserSession();
 
-        // Adiciona um listener para monitorar mudanças no estado de autenticação
-        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: authListener } = supabase.auth.onAuthStateChange((session) => {
             if (session) {
-                setUser(session.user); // Atualiza o usuário com a sessão ativa
+                setUser(session.user); 
             } else {
-                setUser(null); // Limpa o usuário caso a sessão seja encerrada
+                setUser(null); 
             }
         });
 
-        // Limpeza do listener ao desmontar o componente
         return () => {
             authListener.subscription?.unsubscribe();
         };
