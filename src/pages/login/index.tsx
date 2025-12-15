@@ -10,6 +10,7 @@ function Login() {
     const { user, setUser } = useAuth();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    console.log(user);
 
     const handleLoginSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

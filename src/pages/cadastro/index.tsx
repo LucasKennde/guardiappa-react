@@ -30,6 +30,7 @@ function Cadastro() {
             if (password === confirmPassword) {
                 try {
                     const { data, error } = mockAuth.signUp(email, password);
+                    console.log(data);
 
                     if (error) {
                         alert(error.message)

@@ -100,12 +100,12 @@ export default function Dashboard() {
         }
     };
 
-    const calcularMargem = (denunciasAtual: number, denunciasAnterior: number): string => {
-        if (denunciasAnterior === 0) return "0";
-        const diferenca = denunciasAtual - denunciasAnterior;
-        const margem = (diferenca / denunciasAnterior) * 100;
-        return margem.toFixed(2);
-    };
+    // const calcularMargem = (denunciasAtual: number, denunciasAnterior: number): string => {
+    //     if (denunciasAnterior === 0) return "0";
+    //     const diferenca = denunciasAtual - denunciasAnterior;
+    //     const margem = (diferenca / denunciasAnterior) * 100;
+    //     return margem.toFixed(2);
+    // };
 
 
 
